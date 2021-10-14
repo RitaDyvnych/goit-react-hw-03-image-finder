@@ -16,7 +16,7 @@ export default class Searchbar extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     if (this.state.find.trim() === "") {
-      alert("Please type searchihg images");
+      alert("Please type searchihg query");
       return;
     }
     this.props.onSubmit(this.state.find);
