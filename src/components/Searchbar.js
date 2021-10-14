@@ -13,18 +13,21 @@ export default class Searchbar extends Component {
     });
   };
 
+  handleSubmit = (e) => {
+    e.preventDefault();
+    if (this.state.find.trim() === "") {
+      alert("Please type searchihg images");
+      return;
+    }
+    this.props.onSubmit(this.state.find);
+    this.setState({ find: "" });
+  };
+
   render() {
     const { find } = this.state;
     return (
       <header className={style.Searchbar}>
-        <form
-          className={style.SearchForm}
-          onSubmit={(e) => {
-            e.preventDefault();
-            this.props.onSubmit(find);
-            this.setState({ find: "" });
-          }}
-        >
+        <form className={style.SearchForm} onSubmit={this.handleSubmit}>
           <button type="submit" className={style.SearchForm__button}>
             <span className={style.SearchForm__buttonLabel}>Search</span>
           </button>
