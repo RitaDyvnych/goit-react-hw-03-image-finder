@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import style from "./styles.module.css";
 import ImageGalleryItem from "./ImageGalleryItem";
 import PropTypes from "prop-types";
+import Button from "./Button";
 // import axios from "axios";
 // import ImagesApiService from "./ApiService";
 
@@ -24,18 +25,14 @@ export default class ImageGallery extends Component {
     }
   }
 
-  // incrementPage() {
-  //     this.setState({page: this.state.page+=1})
-  // }
-  // resetPage() {
-  //     this.state.page = 1;
-  // }
-
   render() {
     return (
-      <ul className={style.ImageGallery}>
-        <ImageGalleryItem imgArray={this.state.imgArray} />
-      </ul>
+      <>
+        <ul className={style.ImageGallery}>
+          <ImageGalleryItem imgArray={this.state.imgArray} />
+        </ul>
+        {this.props.load && <Button />}
+      </>
     );
   }
 }
