@@ -15,6 +15,8 @@ ul {
 
 html {
   box-sizing: border-box;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 *,
@@ -23,8 +25,18 @@ html {
   box-sizing: inherit;
 }
 
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 .App {
-  margin-top: 30px;
+  /* margin-top: 30px;
   margin-bottom: 30px;
-  margin-left: 40px;
+  margin-left: 40px; */
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 16px;
+  padding-bottom: 24px;
 }
