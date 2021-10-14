@@ -9,15 +9,16 @@ import Button from "./Button";
 export default class ImageGallery extends Component {
   state = {
     imgArray: [],
-    page: 1,
   };
   BASE_URL = "https://pixabay.com/api/";
   KEY = "23189460-aa79835af7cd31cf0c37fbc18";
   per_page = 12;
+  page = 1;
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.searchImg !== this.props.searchImg) {
-      const url = `${this.BASE_URL}?image_type=photo&orientation=horizontal&q=${this.props.searchImg}&page=${this.state.page}&per_page=${this.per_page}&key=${this.KEY}`;
+      const url = `${this.BASE_URL}?image_type=photo&orientation=horizontal&q=${this.props.searchImg}&page=${this.page}&per_page=${this.per_page}&key=${this.KEY}`;
+      this.page += 1;
       return fetch(url)
         .then((response) => response.json())
         .then((result) => this.setState({ imgArray: result.hits }));
@@ -31,7 +32,7 @@ export default class ImageGallery extends Component {
         <ul className={style.ImageGallery}>
           <ImageGalleryItem imgArray={this.state.imgArray} />
         </ul>
-        {this.props.load && <Button />}
+        {this.props.load && <Button page={this.page} />}
       </>
     );
   }

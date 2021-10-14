@@ -1,27 +1,32 @@
-import React, { Component } from "react";
+import axios from "axios";
 
-export default class ImagesApiService extends Component {
-  state = {
-    page: 1,
-  };
+export default class ImagesApiService {
+  constructor() {
+    this.searchQuery = "";
+    this.page = 1;
+  }
 
-  // incrementPage() {
-  //     this.state.page += 1;
-  // }
-  // resetPage() {
-  //    this.state.page = 1;}
+  incrementPage() {
+    this.page += 1;
+  }
+  resetPage() {
+    this.page = 1;
+  }
+  get query() {
+    return this.searchQuery;
+  }
+  set query(newQuery) {
+    this.searchQuery = newQuery;
+  }
 
   fetchImages() {
     const BASE_URL = "https://pixabay.com/api/";
     const KEY = "23189460-aa79835af7cd31cf0c37fbc18";
     const per_page = 12;
-    const url = `${BASE_URL}?image_type=photo&orientation=horizontal&q=${this.props.searchImg}&page=${this.state.page}&per_page=${per_page}&key=${KEY}`;
-    return fetch(url)
-      .then((response) => response.json())
-      .then((result) => console.log("result: ", result));
-  }
-
-  render() {
-    return this.fetchImages;
+    const url = `${BASE_URL}?image_type=photo&orientation=horizontal&q=${this.searchQuery}&page=${this.page}&per_page=${per_page}&key=${KEY}`;
+    // return fetch(url)
+    //   .then((response) => response.json())
+    //   .then((result) => console.log("result: ", result));
+    return axios.get(url).then((result) => {});
   }
 }
