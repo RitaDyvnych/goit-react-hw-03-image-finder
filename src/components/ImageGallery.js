@@ -3,6 +3,7 @@ import style from "./styles.module.css";
 import ImageGalleryItem from "./ImageGalleryItem";
 import PropTypes from "prop-types";
 import ImagesApiService from "../apiService/ApiService";
+import Loader from "react-loader-spinner";
 
 const newImagesApiService = new ImagesApiService();
 
@@ -21,11 +22,15 @@ export default class ImageGallery extends Component {
       newImagesApiService
         .searchImages()
         .then((data) => {
-          this.setState({
-            imgArray: data.hits,
-            page: newImagesApiService.pages,
-            status: "success",
-          });
+          if (data.hits.length > 0) {
+            this.setState({
+              imgArray: data.hits,
+              page: newImagesApiService.pages,
+              status: "success",
+            });
+          } else {
+            this.setState({ status: "error" });
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -56,10 +61,19 @@ export default class ImageGallery extends Component {
     const { imgArray } = this.state;
 
     if (this.state.status === "idle") {
-      return <p className={style.text}>Hello! Search something</p>;
+      return <p className={style.text}>Hello! Type some searching query</p>;
     }
     if (this.state.status === "pending") {
-      return <p className={style.text}>Wait please!</p>;
+      return (
+        <Loader
+          type="Circles"
+          className={style.loading}
+          color="#00BFFF"
+          height={100}
+          width={100}
+          timeout={7000} //3 secs
+        />
+      );
     }
     if (this.state.status === "success") {
       return (
