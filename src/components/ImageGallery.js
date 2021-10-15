@@ -1,43 +1,89 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import style from "./styles.module.css";
 import ImageGalleryItem from "./ImageGalleryItem";
 import PropTypes from "prop-types";
-import Button from "./Button";
-// import axios from "axios";
-// import ImagesApiService from "./ApiService";
+import ImagesApiService from "../apiService/ApiService";
+
+const newImagesApiService = new ImagesApiService();
 
 export default class ImageGallery extends Component {
   state = {
     imgArray: [],
+    page: 1,
+    status: "idle",
   };
-  BASE_URL = "https://pixabay.com/api/";
-  KEY = "23189460-aa79835af7cd31cf0c37fbc18";
-  per_page = 12;
-  page = 1;
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchImg !== this.props.searchImg) {
-      const url = `${this.BASE_URL}?image_type=photo&orientation=horizontal&q=${this.props.searchImg}&page=${this.page}&per_page=${this.per_page}&key=${this.KEY}`;
-      this.page += 1;
-      return fetch(url)
-        .then((response) => response.json())
-        .then((result) => this.setState({ imgArray: result.hits }));
-      // return axios.get(url).then((response) => response.json()).then(result=>this.setState({imgArray: result}));
+      this.setState({ status: "pending" });
+      newImagesApiService.resetPage();
+      newImagesApiService.query = this.props.searchImg;
+      newImagesApiService
+        .searchImages()
+        .then((data) => {
+          this.setState({
+            imgArray: data.hits,
+            page: newImagesApiService.pages,
+            status: "success",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          this.setState({ status: "error" });
+        });
     }
   }
 
+  handleClick = () => {
+    newImagesApiService.pages = 1;
+    newImagesApiService
+      .searchImages()
+      .then((data) => {
+        this.setState((prev) => ({
+          imgArray: [...prev.imgArray, ...data.hits],
+          page: newImagesApiService.pages,
+          status: "success",
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({ status: "error" });
+      });
+    setTimeout(() => this.props.scroll(), 1000);
+  };
+
   render() {
-    return (
-      <>
-        <ul className={style.ImageGallery}>
-          <ImageGalleryItem imgArray={this.state.imgArray} />
-        </ul>
-        {this.props.load && <Button page={this.page} />}
-      </>
-    );
+    const { imgArray } = this.state;
+
+    if (this.state.status === "idle") {
+      return <p className={style.text}>Hello! Search something</p>;
+    }
+    if (this.state.status === "pending") {
+      return <p className={style.text}>Wait please!</p>;
+    }
+    if (this.state.status === "success") {
+      return (
+        <>
+          <ul className={style.ImageGallery}>
+            <ImageGalleryItem imgArray={imgArray} />
+          </ul>
+          <button
+            type="button"
+            onClick={this.handleClick}
+            className={style.Button}
+          >
+            Load more
+          </button>
+        </>
+      );
+    }
+    if (this.state.status === "error") {
+      return <p className={style.text}>Ooops! Something went wrong</p>;
+    }
   }
 }
 
 ImageGallery.propTypes = {
   searchImg: PropTypes.string.isRequired,
+  scroll: PropTypes.func.isRequired,
 };
