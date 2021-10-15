@@ -21,8 +21,6 @@ export default class ImageGallery extends Component {
     if (prevProps.searchImg !== this.props.searchImg) {
       this.setState({ status: "pending" });
       newImagesApiService.resetPage();
-      console.log("prevProps.searchImg", prevProps.searchImg);
-      console.log("this.props.searchImg", this.props.searchImg);
       newImagesApiService.query = this.props.searchImg;
       newImagesApiService
         .searchImages()
@@ -38,7 +36,7 @@ export default class ImageGallery extends Component {
           }
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
           this.setState({ status: "error" });
         });
     }
@@ -54,12 +52,11 @@ export default class ImageGallery extends Component {
           page: newImagesApiService.pages,
           status: "success",
         }));
+        this.props.scroll();
       })
       .catch((error) => {
-        console.log(error);
         this.setState({ status: "error" });
       });
-    setTimeout(() => this.props.scroll(), 1000);
   };
 
   toggleModal = () => {

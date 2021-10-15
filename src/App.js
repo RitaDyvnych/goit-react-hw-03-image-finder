@@ -10,7 +10,6 @@ class App extends Component {
 
   onSubmit = (data) => {
     this.setState({ searchImg: data });
-    setTimeout(() => this.onPageScroll(), 1000);
   };
 
   onPageScroll() {
