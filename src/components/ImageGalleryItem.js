@@ -10,6 +10,7 @@ export default class ImageGalleryItem extends Component {
           src={el.webformatURL}
           alt={el.tags}
           className={style.ImageGalleryItem__image}
+          onClick={this.props.onGalleryImageClick}
         />
       </li>
     ));
@@ -18,4 +19,5 @@ export default class ImageGalleryItem extends Component {
 
 ImageGalleryItem.propTypes = {
   imgArray: PropTypes.array.isRequired,
+  onGalleryImageClick: PropTypes.func.isRequired,
 };

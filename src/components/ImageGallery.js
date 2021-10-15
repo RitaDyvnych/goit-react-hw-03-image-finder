@@ -4,6 +4,7 @@ import ImageGalleryItem from "./ImageGalleryItem";
 import PropTypes from "prop-types";
 import ImagesApiService from "../apiService/ApiService";
 import Loader from "react-loader-spinner";
+import Modal from "./Modal";
 
 const newImagesApiService = new ImagesApiService();
 
@@ -12,12 +13,16 @@ export default class ImageGallery extends Component {
     imgArray: [],
     page: 1,
     status: "idle",
+    showModal: false,
+    bigImg: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchImg !== this.props.searchImg) {
       this.setState({ status: "pending" });
       newImagesApiService.resetPage();
+      console.log("prevProps.searchImg", prevProps.searchImg);
+      console.log("this.props.searchImg", this.props.searchImg);
       newImagesApiService.query = this.props.searchImg;
       newImagesApiService
         .searchImages()
@@ -57,13 +62,26 @@ export default class ImageGallery extends Component {
     setTimeout(() => this.props.scroll(), 1000);
   };
 
-  render() {
-    const { imgArray } = this.state;
+  toggleModal = () => {
+    this.setState({ showModal: !this.state.showModal });
+  };
 
-    if (this.state.status === "idle") {
+  onGalleryImageClick = (e) => {
+    e.preventDefault();
+    let imgSrc = e.target.src;
+    this.setState({
+      bigImg: this.state.imgArray.find((el) => el.webformatURL === imgSrc),
+    });
+    this.toggleModal();
+  };
+
+  render() {
+    const { imgArray, showModal, status, bigImg } = this.state;
+
+    if (status === "idle") {
       return <p className={style.text}>Hello! Type some searching query</p>;
     }
-    if (this.state.status === "pending") {
+    if (status === "pending") {
       return (
         <Loader
           type="Circles"
@@ -75,11 +93,14 @@ export default class ImageGallery extends Component {
         />
       );
     }
-    if (this.state.status === "success") {
+    if (status === "success") {
       return (
         <>
           <ul className={style.ImageGallery}>
-            <ImageGalleryItem imgArray={imgArray} />
+            <ImageGalleryItem
+              imgArray={imgArray}
+              onGalleryImageClick={this.onGalleryImageClick}
+            />
           </ul>
           <button
             type="button"
@@ -88,10 +109,13 @@ export default class ImageGallery extends Component {
           >
             Load more
           </button>
+          {showModal && (
+            <Modal toggleModal={this.toggleModal} bigImg={bigImg}></Modal>
+          )}
         </>
       );
     }
-    if (this.state.status === "error") {
+    if (status === "error") {
       return <p className={style.text}>Ooops! Something went wrong</p>;
     }
   }
